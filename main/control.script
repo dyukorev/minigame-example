@@ -1,0 +1,72 @@
+go.property("angle_closed", 45)
+go.property("angle_opened", 180)
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	-- Add initialization code here
+	-- Learn more: https://defold.com/manuaxls/script/
+	-- Remove this function if not needed
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("open") then
+		--go.animate(".", "euler.z", go.PLAYBACK_ONCE_FORWARD, self.angle_opened, go.EASING_INBOUNCE, 0.5, 0, function(self, url, property) 
+		--	self.is_open = true
+		--end)
+		local pos = go.get_position()
+		pos.x = pos.x + 500
+		pos.y = pos.y + 500
+		
+		go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTQUAD, 1, 0, function(self, url, property) 
+			self.is_open = true
+		end)
+	elseif message_id == hash("close") then
+		local pos = go.get_position()
+		pos.x = pos.x - 500
+		pos.y = pos.y - 500
+		go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTQUAD, 1, 0, function(self, url, property) 
+			self.is_open = false
+		end)
+		
+		--go.animate(".", "euler.z", go.PLAYBACK_ONCE_FORWARD, self.angle_closed, go.EASING_INBOUNCE, 0.5, 0, function(self, url, property)
+		--	self.is_open = false
+		--end)
+	end
+	-- Add message-handling code here
+	-- Learn more: https://defold.com/manuals/message-passing/
+	-- Remove this function if not needed
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("touch") and action.released then
+		local object_pos = go.get_position()
+		if object_pos.x - 100 < action.x and object_pos.x + 100 > action.x 
+			and object_pos.y - 100 < action.y and object_pos.y + 100 > action.y then
+				print("touch me")
+				if self.is_open then
+					msg.post("#", "close")
+				else
+					msg.post("#", "open")
+				end
+				
+		end
+	end
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Learn more: https://defold.com/manuals/hot-reload/
+	-- Remove this function if not needed
+end
